@@ -6,14 +6,13 @@ At the start, players upload or paste a text file of words, each separated by a 
 
 Each round, the game randomly selects words from that pool, and the player must type them correctly before the round timer runs out.
 
-Every round has a quota of words that must be typed. Fail to meet the quota, and the run ends. As the rounds progress, the quotas get tighter, forcing faster and more accurate typing.
+Every round has a quota of words/score that must be typed. Fail to meet the quota and the run ends. As the rounds progress, the quotas get tighter, forcing faster and more accurate typing.
 
 Between rounds, players enter a shop phase, where they can spend earned money to buy power-ups and upgrades. Some are short-term boosts (i.e. extra time, shortening of words, removal of certain letters, ways of getting more money), while others are long-term investments (i.e. higher money per word, permanent typing bonuses).
 
 ## Special twists I'd like to implement in the future/if I have time
 
 - Every third round is a boss challenge, introducing special rules that make the game significantly harder (like reversed words, doubled quotas, distractions, etc.).
-
 - The ability to save runs so players can continue later, or experiment with different builds over multiple sessions.
 
 ## Core loop of the game
@@ -76,7 +75,6 @@ Between rounds, players enter a shop phase, where they can spend earned money to
 ### 5. End Conditions
 
 - Game Over: Show the round the player failed on, display final score, and give option to restart.
-
 - Victory: Show a win screen if all 9 rounds are cleared, display total score and money, and give option to restart.
 
 ## Conclusion
@@ -86,5 +84,5 @@ _At this point I've also written the code for how a round would work without a t
 - A timer
 - A shop
 - A win/loss screen
-- Transitions between the round -> shop and the round -> win/loss screen
+- Transitions between the _round -> shop_ and the _round -> win/loss screen_
 - The power ups you can buy from the shop and what they do. I'll start with a small amount and continuosly add onto them.

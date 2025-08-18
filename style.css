@@ -34,6 +34,8 @@ p {
 #myOutput {
   font-weight: bold;
   color: #007bff;
+  white-space: pre-wrap;
+  text-align: center;
 }
 
 #score {
@@ -43,12 +45,17 @@ p {
   left: 25px;
   color: white;
   font-size: 1.5em;
+  white-space: pre-wrap;
 }
 
 #startButton {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+#timer {
+  color: white;
 }
 
 .correct {
@@ -78,14 +85,14 @@ p {
 @keyframes shake {
   0%,
   100% {
-    transform: translateX(0px) translateY(0px);
+    transform: translateY(0px);
   }
   20%,
   60% {
-    transform: translateX(5px) translateY(-5px);
+    transform: translateY(-3px);
   }
   40%,
   80% {
-    transform: translateX(-5px) translateY(5px);
+    transform: translateY(3px);
   }
 }
