@@ -1,0 +1,91 @@
+body {
+  font-family: sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  margin: 0;
+  background-color: black;
+}
+
+input[type="text"] {
+  padding: 10px;
+  font-size: 1.2em;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 300px;
+  margin-bottom: 20px;
+}
+
+input[type="file"] {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+  margin-left: 163px;
+}
+
+p {
+  font-size: 1.1em;
+  color: #333;
+}
+
+#myOutput {
+  font-weight: bold;
+  color: #007bff;
+}
+
+#score {
+  font-family: sans-serif;
+  position: absolute;
+  top: 0;
+  left: 25px;
+  color: white;
+  font-size: 1.5em;
+}
+
+#startButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.correct {
+  color: #39ff14;
+}
+
+.crossed-out {
+  text-decoration: line-through;
+  color: red;
+}
+
+.leftover {
+  color: #007bff;
+}
+
+.shake-infinite {
+  animation-name: shake;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+}
+
+.shake {
+  animation-name: shake;
+  animation-duration: 1s;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0px) translateY(0px);
+  }
+  20%,
+  60% {
+    transform: translateX(5px) translateY(-5px);
+  }
+  40%,
+  80% {
+    transform: translateX(-5px) translateY(5px);
+  }
+}
