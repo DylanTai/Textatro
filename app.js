@@ -75,8 +75,8 @@ const roundOver = (transition) => {
   clearInterval(timerInterval);
   if (transition === 1) {
     if (round != 9) {
-      quota += 10;
-      baseTime -= 10;
+      quota += 5;
+      baseTime -= 5;
       infoEl.classList.add("shake");
       shopStart();
     } else if (round === 9) {
@@ -93,6 +93,7 @@ const roundOver = (transition) => {
     scoreEl.style.visibility = "hidden";
     infoEl.style.visibility = "hidden";
     timerEl.style.visibility = "hidden";
+    inputEl.style.visibility = "hidden";
     outputEl.textContent = "You lost!";
     setTimeout(() => {
       location.reload();
@@ -142,7 +143,7 @@ const purchase = (powerUp) => {
       quota -= 3;
     } else if (powerUp === "time") {
       timePU++;
-      baseTime += 3;
+      baseTime += 1;
     } else if (powerUp === "bonus") bonusPU++;
     else if (powerUp === "shorten") shortenPU++;
     else console.error("Power up not found");
@@ -223,7 +224,7 @@ const handleMouseEnter = (img) => {
       '\n"buy quota"';
   if (img.alt === "time")
     img.dataset.description =
-      "Extends the time permanently by 3 seconds.\nCost: " +
+      "Extend the time permanently by 1 second.\nCost: " +
       (
         parseInt(img.dataset.base) +
         parseInt(img.dataset.increment) * timePU
@@ -231,7 +232,7 @@ const handleMouseEnter = (img) => {
       '\n"buy time"';
   if (img.alt === "bonus")
     img.dataset.description =
-      "Gives more gold per word typed.\nCost: " +
+      "Gives more gold per word typed. Each level is another gold.\nCost: " +
       (
         parseInt(img.dataset.base) +
         parseInt(img.dataset.increment) * bonusPU
