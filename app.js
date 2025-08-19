@@ -1,11 +1,9 @@
 /*-------------------------------- Constants --------------------------------*/
 
 /*---------------------------- Variables (state) ----------------------------*/
-let score = 0;
-let money = 0;
+let score = (money = metQuota = 0);
 let round = 0;
-let metQuota = 0;
-let quota = 100;
+let quota = 30;
 let testWord;
 let outputWords;
 let textInput = "";
@@ -14,6 +12,7 @@ let baseTime = 60;
 let time = baseTime;
 let timerInterval;
 let inShop = false;
+let quotaPU = (timePU = bonusPU = shortenPU = 0);
 
 /*------------------------ Cached Element References ------------------------*/
 const timerEl = document.getElementById("timer");
@@ -22,6 +21,8 @@ const outputEl = document.getElementById("myOutput");
 const browseButtonEl = document.getElementById("browseButton");
 const startButtonEl = document.getElementById("startButton");
 const scoreEl = document.getElementById("score");
+const images = document.querySelectorAll(".image-container img");
+const descBoxEl = document.getElementById("description-box");
 
 /*-------------------------------- Functions --------------------------------*/
 
@@ -32,9 +33,13 @@ const init = () => {
   timerEl.style.visibility = "hidden";
   inputEl.style.visibility = "hidden";
   scoreEl.style.visibility = "hidden";
+  images.forEach((img) => {
+    img.style.visibility = "hidden";
+  });
 };
 
-const roundStart = () => {
+const gameRoundStart = () => {
+  inShop = false;
   time = baseTime;
   timerEl.textContent = `Time remaining: ${baseTime}`;
   timerInterval = setInterval(updateCountdown, 1000);
@@ -43,53 +48,66 @@ const roundStart = () => {
   scoreEl.style.visibility = "visible";
   browseButtonEl.style.visibility = "hidden";
   startButtonEl.style.visibility = "hidden";
+  images.forEach((img) => {
+    img.style.visibility = "hidden";
+  });
 };
 
-const roundOver = (win, shop) => {
+// transition = 1 -> go to shop
+// transition = 2 -> go to next round
+// transition = 3 -> go to you lose screen
+const roundOver = (transition) => {
   timerEl.style.visibility = "hidden";
-  inputEl.style.visibility = "hidden";
-  scoreEl.style.visibility = "hidden";
+  outputEl.classList.remove("shake-infinite");
   metQuota = 0;
   clearInterval(timerInterval);
-  if (win) {
-    if (round != 9 && !shop) {
+  if (transition === 1) {
+    if (round != 9) {
       quota += 10;
       baseTime -= 10;
-    } else if (round === 9 && shop) {
+      shopStart();
+    } else if (round === 9) {
       outputEl.textContent = "You win!";
       setTimeout(() => {
         location.reload();
       }, 5000);
-    } else shopStart();
+    }
     round++;
-  } else {
+  } else if (transition === 2) {
+    gameRoundStart();
+    resetInput();
+  } else if (transition === 3) {
     outputEl.textContent = "You lost!";
     setTimeout(() => {
       location.reload();
     }, 5000);
-  }
+  } else console.log("Transition output incorrect");
 };
 
 const shopStart = () => {
   inShop = true;
-  inputEl.style.visibility = "visible";
   outputEl.textContent =
-    'Welcome to the shop!\nHover over each power up to see what it does!\nType "buy name-of-item" when you want to buy something';
+    'Welcome to the shop!\nHover over each power up to see what it does!\nType "buy name-of-item" when you want to buy something.\nType "continue" to go to the next round!';
+  images.forEach((img) => {
+    img.style.visibility = "visible";
+  });
 };
 
+//returns a random word from the list of words
 const randomWord = () => {
   return dict[Math.floor(Math.random() * dict.length)];
 };
 
-const render = (wordReset) => {
-  if (wordReset) {
+// resets the input and possibly resets the word if it's in the round or not
+const resetInput = () => {
+  if (!inShop) {
     testWord = randomWord();
-    inputEl.value = "";
     outputEl.classList.remove("shake-infinite");
+    outputEl.textContent = testWord;
   }
   //console.log("Score: " + score); //debug
-  scoreEl.textContent = `Score: ${score}\nMoney: $${money}`;
-  outputEl.textContent = testWord;
+  inputEl.value = "";
+  scoreEl.textContent = `Score: ${score}\nMoney: $${money}\nQuota: ${metQuota}/${quota}`;
 };
 
 //checks to see how much of a word is finished and returns an array that has:
@@ -114,7 +132,7 @@ const checkWords = (answer, tester) => {
 };
 
 const updateCountdown = () => {
-  if (time <= 0) roundOver(false, false);
+  if (time <= 0) roundOver(3);
   else time--;
 
   timerEl.textContent = `Time remaining: ${time}`;
@@ -138,8 +156,8 @@ startButtonEl.addEventListener("click", function () {
         if (!/^[A-Za-z]+$/.test(dict[itr])) dict.splice(itr--, 1);
         else dict[itr] = dict[itr].toLowerCase();
       }
-      roundStart();
-      render(true);
+      gameRoundStart();
+      resetInput();
       // outputEl.textContent = dict; //debug
     };
     reader.onerror = function (event) {
@@ -166,15 +184,45 @@ inputEl.addEventListener("input", (event) => {
       score += testWord.length;
       money += testWord.length;
       metQuota += testWord.length;
-      render(true);
-      if (metQuota >= quota) roundOver(true, true);
+      if (metQuota >= quota) roundOver(1);
+      resetInput();
     }
     //console.log("Current typed text:", textInput); //debug
   } else {
+    outputWords = textInput.trim().split(" ");
+    console.log(outputWords);
+    if (
+      outputWords.length === 2 &&
+      outputWords[0] === "buy" &&
+      ["quota", "time", "bonus", "shorten"].includes(outputWords[1])
+    ) {
+      if (money >= 30) {
+        if (outputWords[1] === "quota") quotaPU++;
+        else if (outputWords[1] === "time") timePU++;
+        else if (outputWords[1] === "bonus") bonusPU++;
+        else if (outputWords[1] === "shorten") shorten++;
+        else console.log("Power up not found");
+        money -= 30;
+        scoreEl.classList.add("shake");
+        resetInput();
+      }
+    } else if (outputWords.length === 1 && outputWords[0] === "continue")
+      roundOver(2);
   }
 });
 
 //event listener for shaking
 scoreEl.addEventListener("animationend", () => {
   scoreEl.classList.remove("shake");
+});
+
+images.forEach((img) => {
+  img.addEventListener("mouseenter", () => {
+    descBoxEl.textContent = img.dataset.description;
+    descBoxEl.style.visibility = "visible";
+  });
+
+  img.addEventListener("mouseleave", () => {
+    descBoxEl.style.visibility = "hidden";
+  });
 });

@@ -31,6 +31,20 @@ p {
   color: #333;
 }
 
+#description-box {
+  margin-top: 30px;
+  padding: 15px 20px;
+  border: 2px solid #333;
+  border-radius: 10px;
+  background: #f9f9f9;
+  min-width: 300px;
+  text-align: center;
+  font-size: 30px;
+  font-weight: bold;
+  visibility: hidden;
+  white-space: pre-line;
+}
+
 #myOutput {
   font-weight: bold;
   color: #007bff;
@@ -65,6 +79,27 @@ p {
 .crossed-out {
   text-decoration: line-through;
   color: red;
+}
+
+.image-container {
+  display: flex;
+  gap: 15px;
+}
+
+.image-container img {
+  display: flex;
+  width: 25%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-container img:hover {
+  transform: scale(1.05);
 }
 
 .leftover {
