@@ -62,9 +62,21 @@ const gameRoundStart = () => {
   });
 };
 
+//part of the win or lose screen transition
+const winLoseScreen = (text) => {
+  scoreEl.style.visibility = "hidden";
+  infoEl.style.visibility = "hidden";
+  timerEl.style.visibility = "hidden";
+  inputEl.style.visibility = "hidden";
+  outputEl.textContent = text;
+  setTimeout(() => {
+    location.reload();
+  }, 5000);
+};
+
 // what happens when each round is over
 // transition = 1 -> go to shop
-// transition = 2 -> go to next round
+// transition = 2 -> go to next round/win
 // transition = 3 -> go to you lose screen
 const roundOver = (transition) => {
   timerEl.style.visibility = "hidden";
@@ -79,25 +91,13 @@ const roundOver = (transition) => {
       baseTime -= 5;
       infoEl.classList.add("shake");
       shopStart();
-    } else if (round === 9) {
-      outputEl.textContent = "You win!";
-      setTimeout(() => {
-        location.reload();
-      }, 5000);
-    }
+    } else if (round === 9) winLoseScreen("You won!");
     round++;
   } else if (transition === 2) {
     gameRoundStart();
     resetInput();
   } else if (transition === 3) {
-    scoreEl.style.visibility = "hidden";
-    infoEl.style.visibility = "hidden";
-    timerEl.style.visibility = "hidden";
-    inputEl.style.visibility = "hidden";
-    outputEl.textContent = "You lost!";
-    setTimeout(() => {
-      location.reload();
-    }, 5000);
+    winLoseScreen("You lost!");
   } else console.error("Transition output incorrect");
 };
 
