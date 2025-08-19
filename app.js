@@ -2,9 +2,8 @@
 
 /*---------------------------- Variables (state) ----------------------------*/
 let score = (money = metQuota = 0);
-money = 1000;
 let round = 1;
-let quota = 30;
+let quota = 100;
 let testWord;
 let outputWords;
 let textInput = "";
@@ -15,6 +14,7 @@ let timerInterval;
 let shopCantBuyMsg;
 let inShop = false;
 let quotaPU = (timePU = bonusPU = shortenPU = 0);
+let combo = 0;
 
 /*------------------------ Cached Element References ------------------------*/
 const timerEl = document.getElementById("timer");
@@ -26,6 +26,7 @@ const scoreEl = document.getElementById("score");
 const infoEl = document.getElementById("info");
 const images = document.querySelectorAll(".image-container img");
 const descBoxEl = document.getElementById("description-box");
+const comboEl = document.getElementById("combo");
 
 /*-------------------------------- Functions --------------------------------*/
 
@@ -35,6 +36,7 @@ const init = () => {
     "Please input the text file with which words you want!";
   timerEl.style.visibility = "hidden";
   inputEl.style.visibility = "hidden";
+  comboEl.style.visibility = "hidden";
   scoreEl.style.visibility = "hidden";
   infoEl.style.visibility = "hidden";
   images.forEach((img) => {
@@ -47,6 +49,7 @@ const gameRoundStart = () => {
   time = baseTime;
   timerEl.textContent = `Time remaining: ${baseTime}`;
   timerInterval = setInterval(updateCountdown, 1000);
+  comboEl.style.visibility = "visible";
   timerEl.style.visibility = "visible";
   inputEl.style.visibility = "visible";
   scoreEl.style.visibility = "visible";
@@ -64,6 +67,8 @@ const gameRoundStart = () => {
 const roundOver = (transition) => {
   timerEl.style.visibility = "hidden";
   outputEl.classList.remove("shake-infinite");
+  comboEl.classList.remove("fadeInOut");
+  combo = 0;
   metQuota = 0;
   clearInterval(timerInterval);
   if (transition === 1) {
@@ -102,15 +107,15 @@ const showShopMessage = () => {
 const shopStart = () => {
   inShop = true;
   showShopMessage();
+  comboEl.style.visibility = "hidden";
   images.forEach((img) => {
     img.style.visibility = "visible";
   });
 };
 
 const purchase = (powerUp) => {
-  let price;
-
   //determine the price
+  let price;
   images.forEach((img) => {
     if (img.alt === powerUp) {
       price = parseInt(img.dataset.base);
@@ -125,12 +130,17 @@ const purchase = (powerUp) => {
     }
   });
   //console.log(price); //debug
+
   //purchase the item or tell the user they don't have the money for it
   if (money >= price) {
     money -= price;
-    if (powerUp === "quota") quotaPU++;
-    else if (powerUp === "time") timePU++;
-    else if (powerUp === "bonus") bonusPU++;
+    if (powerUp === "quota") {
+      quotaPU++;
+      quota -= 3;
+    } else if (powerUp === "time") {
+      timePU++;
+      baseTime += 3;
+    } else if (powerUp === "bonus") bonusPU++;
     else if (powerUp === "shorten") shortenPU++;
     else console.error("Power up not found");
     infoEl.classList.add("shake");
@@ -145,7 +155,10 @@ const purchase = (powerUp) => {
 
 //returns a random word from the list of words
 const randomWord = () => {
-  return dict[Math.floor(Math.random() * dict.length)];
+  let ret = dict[Math.floor(Math.random() * dict.length)];
+  if (ret.length - shortenPU >= 1)
+    return ret.substring(0, ret.length - shortenPU);
+  return randomWord();
 };
 
 // resets the input and possibly resets the word if it's in the round or not
@@ -268,16 +281,30 @@ inputEl.addEventListener("input", (event) => {
   textInput = event.target.value;
   //what happens if you're playing the game and not in a shop
   if (!inShop) {
+    //outputs the array to the window to show which letters are good, bad, and not found yet
     outputWords = checkWords(textInput.trim(), testWord);
     if (outputWords[0].length > 0 && outputWords[1].length === 0) {
       outputEl.classList.add("shake-infinite");
-    } else outputEl.classList.remove("shake-infinite");
+    } else {
+      outputEl.classList.remove("shake-infinite");
+      combo = 0;
+    }
     outputEl.innerHTML = `<span class="correct">${outputWords[0]}</span><span class="crossed-out">${outputWords[1]}</span><span class=leftover">${outputWords[2]}</span>`;
+
+    //what happens when you complete the word
     if (outputWords[0] === testWord) {
       scoreEl.classList.add("shake");
       score += testWord.length;
-      money += testWord.length;
+      money += testWord.length * (bonusPU + 1);
       metQuota += testWord.length;
+      combo++;
+      if (combo >= 3) {
+        comboEl.textContent = `COMBO: ${combo}`;
+        comboEl.classList.add("fadeInOut");
+        score += combo;
+        money += combo;
+        metQuota += combo;
+      }
       if (metQuota >= quota) roundOver(1);
       resetInput();
     }
@@ -285,7 +312,7 @@ inputEl.addEventListener("input", (event) => {
   } else {
     //what happens if you're in a shop
     outputWords = textInput.trim().split(" ");
-    //console.log(outputWords); //de
+    //console.log(outputWords); //debug
     if (
       outputWords.length === 2 &&
       outputWords[0] === "buy" &&
@@ -298,14 +325,19 @@ inputEl.addEventListener("input", (event) => {
   }
 });
 
-//event listener for shaking for score
+//event listener for shaking for the top left score
 scoreEl.addEventListener("animationend", () => {
   scoreEl.classList.remove("shake");
 });
 
-//event listener for shaking for info
+//event listener for shaking for the top right info
 infoEl.addEventListener("animationend", () => {
   infoEl.classList.remove("shake");
+});
+
+//event listener for the combo
+comboEl.addEventListener("animationend", () => {
+  comboEl.classList.remove("fadeInOut");
 });
 
 images.forEach((img) => {

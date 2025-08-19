@@ -31,6 +31,22 @@ p {
   color: #333;
 }
 
+#combo {
+  background: linear-gradient(
+    to right,
+    red,
+    orange,
+    yellow,
+    green,
+    skyblue,
+    violet
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  opacity: 0;
+}
+
 #description-box {
   margin-top: 30px;
   padding: 15px 20px;
@@ -91,6 +107,13 @@ p {
   color: red;
 }
 
+.fadeInOut {
+  animation-name: fadeInOut;
+  animation-duration: 1s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+}
+
 .image-container {
   display: flex;
   gap: 15px;
@@ -139,5 +162,20 @@ p {
   40%,
   80% {
     transform: translateY(3px);
+  }
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
   }
 }
