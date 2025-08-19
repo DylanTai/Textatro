@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <p id="score">Score:</p>
+    <p id="score"></p>
+    <p id="info"></p>
     <p id="timer">Time Remaining: 60 seconds</p>
 
     <input type="text" id="myInput" />
@@ -19,23 +20,27 @@
     <div class="image-container">
       <img
         src="Images/QuotaReducer.png"
-        alt="Quota Reducer"
-        data-description='Reduces the quota permanently by 3. "buy quota"'
+        alt="quota"
+        data-base="30"
+        data-increment="10"
       />
       <img
         src="Images/TimeExtender.png"
-        alt="Time Extender"
-        data-description='Extends the time permanently by 3 seconds. "buy time"'
+        alt="time"
+        data-base="30"
+        data-increment="10"
       />
       <img
         src="Images/WordBonus.png"
-        alt="Word Bonus"
-        data-description='Gives more gold per word typed. "buy bonus"'
+        alt="bonus"
+        data-base="50"
+        data-increment="15"
       />
       <img
         src="Images/WordShortener.png"
-        alt="Word Shortner"
-        data-description='Shortens words by 1 letter. "buy shorten"'
+        alt="shorten"
+        data-base="150"
+        data-increment="150"
       />
     </div>
 

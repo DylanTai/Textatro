@@ -2,7 +2,8 @@
 
 /*---------------------------- Variables (state) ----------------------------*/
 let score = (money = metQuota = 0);
-let round = 0;
+money = 1000;
+let round = 1;
 let quota = 30;
 let testWord;
 let outputWords;
@@ -11,6 +12,7 @@ let dict = [];
 let baseTime = 60;
 let time = baseTime;
 let timerInterval;
+let shopCantBuyMsg;
 let inShop = false;
 let quotaPU = (timePU = bonusPU = shortenPU = 0);
 
@@ -21,6 +23,7 @@ const outputEl = document.getElementById("myOutput");
 const browseButtonEl = document.getElementById("browseButton");
 const startButtonEl = document.getElementById("startButton");
 const scoreEl = document.getElementById("score");
+const infoEl = document.getElementById("info");
 const images = document.querySelectorAll(".image-container img");
 const descBoxEl = document.getElementById("description-box");
 
@@ -33,6 +36,7 @@ const init = () => {
   timerEl.style.visibility = "hidden";
   inputEl.style.visibility = "hidden";
   scoreEl.style.visibility = "hidden";
+  infoEl.style.visibility = "hidden";
   images.forEach((img) => {
     img.style.visibility = "hidden";
   });
@@ -46,6 +50,7 @@ const gameRoundStart = () => {
   timerEl.style.visibility = "visible";
   inputEl.style.visibility = "visible";
   scoreEl.style.visibility = "visible";
+  infoEl.style.visibility = "visible";
   browseButtonEl.style.visibility = "hidden";
   startButtonEl.style.visibility = "hidden";
   images.forEach((img) => {
@@ -65,6 +70,7 @@ const roundOver = (transition) => {
     if (round != 9) {
       quota += 10;
       baseTime -= 10;
+      infoEl.classList.add("shake");
       shopStart();
     } else if (round === 9) {
       outputEl.textContent = "You win!";
@@ -77,20 +83,64 @@ const roundOver = (transition) => {
     gameRoundStart();
     resetInput();
   } else if (transition === 3) {
+    scoreEl.style.visibility = "hidden";
+    infoEl.style.visibility = "hidden";
+    timerEl.style.visibility = "hidden";
     outputEl.textContent = "You lost!";
     setTimeout(() => {
       location.reload();
     }, 5000);
-  } else console.log("Transition output incorrect");
+  } else console.error("Transition output incorrect");
+};
+
+const showShopMessage = () => {
+  if (inShop)
+    outputEl.textContent =
+      'Welcome to the shop!\nHover over each power up to see what it does!\nClick on the button or type "buy name-of-item" when you want to buy something.\nType "continue" to go to the next round!';
 };
 
 const shopStart = () => {
   inShop = true;
-  outputEl.textContent =
-    'Welcome to the shop!\nHover over each power up to see what it does!\nType "buy name-of-item" when you want to buy something.\nType "continue" to go to the next round!';
+  showShopMessage();
   images.forEach((img) => {
     img.style.visibility = "visible";
   });
+};
+
+const purchase = (powerUp) => {
+  let price;
+
+  //determine the price
+  images.forEach((img) => {
+    if (img.alt === powerUp) {
+      price = parseInt(img.dataset.base);
+      if (powerUp === "quota")
+        price += parseInt(img.dataset.increment) * quotaPU;
+      else if (powerUp === "time")
+        price += parseInt(img.dataset.increment) * timePU;
+      else if (powerUp === "bonus")
+        price += parseInt(img.dataset.increment) * bonusPU;
+      else if (powerUp === "shorten")
+        price += parseInt(img.dataset.increment) * shortenPU;
+    }
+  });
+  //console.log(price); //debug
+  //purchase the item or tell the user they don't have the money for it
+  if (money >= price) {
+    money -= price;
+    if (powerUp === "quota") quotaPU++;
+    else if (powerUp === "time") timePU++;
+    else if (powerUp === "bonus") bonusPU++;
+    else if (powerUp === "shorten") shortenPU++;
+    else console.error("Power up not found");
+    infoEl.classList.add("shake");
+  } else {
+    outputEl.textContent = "You do not have enough money to purchase that.";
+    clearTimeout(shopCantBuyMsg);
+    shopCantBuyMsg = setTimeout(showShopMessage, 3500);
+  }
+  resetInput();
+  scoreEl.classList.add("shake");
 };
 
 //returns a random word from the list of words
@@ -108,6 +158,12 @@ const resetInput = () => {
   //console.log("Score: " + score); //debug
   inputEl.value = "";
   scoreEl.textContent = `Score: ${score}\nMoney: $${money}\nQuota: ${metQuota}/${quota}`;
+  infoEl.textContent = `Round: ${round}\n`;
+  if (quotaPU > 0) infoEl.textContent += `Quota Level ${quotaPU}\n`;
+  if (timePU > 0) infoEl.textContent += `Time Level ${timePU}\n`;
+  if (bonusPU > 0) infoEl.textContent += `Bonus Level ${bonusPU}\n`;
+  if (shortenPU > 0) infoEl.textContent += `Shorten Level ${shortenPU}\n`;
+  if (inShop) infoEl.textContent += `Total time: ${baseTime}\n`;
 };
 
 //checks to see how much of a word is finished and returns an array that has:
@@ -136,6 +192,43 @@ const updateCountdown = () => {
   else time--;
 
   timerEl.textContent = `Time remaining: ${time}`;
+};
+
+const handleMouseEnter = (img) => {
+  if (img.alt === "quota")
+    img.dataset.description =
+      "Reduces the quota permanently by 3.\nCost: " +
+      (
+        parseInt(img.dataset.base) +
+        parseInt(img.dataset.increment) * quotaPU
+      ).toString() +
+      '\n"buy quota"';
+  if (img.alt === "time")
+    img.dataset.description =
+      "Extends the time permanently by 3 seconds.\nCost: " +
+      (
+        parseInt(img.dataset.base) +
+        parseInt(img.dataset.increment) * timePU
+      ).toString() +
+      '\n"buy time"';
+  if (img.alt === "bonus")
+    img.dataset.description =
+      "Gives more gold per word typed.\nCost: " +
+      (
+        parseInt(img.dataset.base) +
+        parseInt(img.dataset.increment) * bonusPU
+      ).toString() +
+      '\n"buy bonus"';
+  if (img.alt === "shorten")
+    img.dataset.description =
+      "Shortens words by 1 letter.\nCost: " +
+      (
+        parseInt(img.dataset.base) +
+        parseInt(img.dataset.increment) * shortenPU
+      ).toString() +
+      '\n"buy shorten"';
+  descBoxEl.textContent = img.dataset.description;
+  descBoxEl.style.visibility = "visible";
 };
 
 /*----------------------------- Event Listeners -----------------------------*/
@@ -173,6 +266,7 @@ startButtonEl.addEventListener("click", function () {
 //event listener for typing
 inputEl.addEventListener("input", (event) => {
   textInput = event.target.value;
+  //what happens if you're playing the game and not in a shop
   if (!inShop) {
     outputWords = checkWords(textInput.trim(), testWord);
     if (outputWords[0].length > 0 && outputWords[1].length === 0) {
@@ -189,40 +283,42 @@ inputEl.addEventListener("input", (event) => {
     }
     //console.log("Current typed text:", textInput); //debug
   } else {
+    //what happens if you're in a shop
     outputWords = textInput.trim().split(" ");
-    console.log(outputWords);
+    //console.log(outputWords); //de
     if (
       outputWords.length === 2 &&
       outputWords[0] === "buy" &&
       ["quota", "time", "bonus", "shorten"].includes(outputWords[1])
     ) {
-      if (money >= 30) {
-        if (outputWords[1] === "quota") quotaPU++;
-        else if (outputWords[1] === "time") timePU++;
-        else if (outputWords[1] === "bonus") bonusPU++;
-        else if (outputWords[1] === "shorten") shorten++;
-        else console.log("Power up not found");
-        money -= 30;
-        scoreEl.classList.add("shake");
-        resetInput();
-      }
+      purchase(outputWords[1]);
+      resetInput();
     } else if (outputWords.length === 1 && outputWords[0] === "continue")
       roundOver(2);
   }
 });
 
-//event listener for shaking
+//event listener for shaking for score
 scoreEl.addEventListener("animationend", () => {
   scoreEl.classList.remove("shake");
 });
 
+//event listener for shaking for info
+infoEl.addEventListener("animationend", () => {
+  infoEl.classList.remove("shake");
+});
+
 images.forEach((img) => {
   img.addEventListener("mouseenter", () => {
-    descBoxEl.textContent = img.dataset.description;
-    descBoxEl.style.visibility = "visible";
+    handleMouseEnter(img);
   });
 
   img.addEventListener("mouseleave", () => {
     descBoxEl.style.visibility = "hidden";
+  });
+
+  img.addEventListener("click", () => {
+    purchase(img.alt);
+    handleMouseEnter(img);
   });
 });
