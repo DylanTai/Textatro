@@ -30,7 +30,7 @@ const comboEl = document.getElementById("combo");
 
 /*-------------------------------- Functions --------------------------------*/
 
-//initialization and reset functionality function
+//initialization function
 const init = () => {
   outputEl.textContent =
     "Please input the text file with which words you want!";
@@ -44,6 +44,7 @@ const init = () => {
   });
 };
 
+//what happens when the game starts
 const gameRoundStart = () => {
   inShop = false;
   time = baseTime;
@@ -61,6 +62,7 @@ const gameRoundStart = () => {
   });
 };
 
+// what happens when each round is over
 // transition = 1 -> go to shop
 // transition = 2 -> go to next round
 // transition = 3 -> go to you lose screen
@@ -98,6 +100,7 @@ const roundOver = (transition) => {
   } else console.error("Transition output incorrect");
 };
 
+//function to show the chat
 const showShopMessage = () => {
   if (inShop)
     outputEl.textContent =
@@ -200,6 +203,7 @@ const checkWords = (answer, tester) => {
   return [correct, incorrect, leftovers];
 };
 
+//updates the timer
 const updateCountdown = () => {
   if (time <= 0) roundOver(3);
   else time--;
@@ -207,6 +211,7 @@ const updateCountdown = () => {
   timerEl.textContent = `Time remaining: ${time}`;
 };
 
+//this handles what happens when you hover over the mouse. in a function so it can update when you purchase something by clicking as well
 const handleMouseEnter = (img) => {
   if (img.alt === "quota")
     img.dataset.description =
@@ -298,6 +303,7 @@ inputEl.addEventListener("input", (event) => {
       money += testWord.length * (bonusPU + 1);
       metQuota += testWord.length;
       combo++;
+      //display combo if it's 3 or more
       if (combo >= 3) {
         comboEl.textContent = `COMBO: ${combo}`;
         comboEl.classList.add("fadeInOut");
@@ -340,6 +346,7 @@ comboEl.addEventListener("animationend", () => {
   comboEl.classList.remove("fadeInOut");
 });
 
+//event listener for every single image in the shop
 images.forEach((img) => {
   img.addEventListener("mouseenter", () => {
     handleMouseEnter(img);
