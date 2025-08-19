@@ -24,7 +24,8 @@ const browseButtonEl = document.getElementById("browseButton");
 const startButtonEl = document.getElementById("startButton");
 const scoreEl = document.getElementById("score");
 const infoEl = document.getElementById("info");
-const images = document.querySelectorAll(".image-container img");
+const imagesEl = document.querySelectorAll(".image-container img");
+const imageTextsEl = document.querySelectorAll(".image-text");
 const descBoxEl = document.getElementById("description-box");
 const comboEl = document.getElementById("combo");
 
@@ -39,8 +40,11 @@ const init = () => {
   comboEl.style.visibility = "hidden";
   scoreEl.style.visibility = "hidden";
   infoEl.style.visibility = "hidden";
-  images.forEach((img) => {
+  imagesEl.forEach((img) => {
     img.style.visibility = "hidden";
+  });
+  imageTextsEl.forEach((text) => {
+    text.style.visibility = "hidden";
   });
 };
 
@@ -57,8 +61,11 @@ const gameRoundStart = () => {
   infoEl.style.visibility = "visible";
   browseButtonEl.style.visibility = "hidden";
   startButtonEl.style.visibility = "hidden";
-  images.forEach((img) => {
+  imagesEl.forEach((img) => {
     img.style.visibility = "hidden";
+  });
+  imageTextsEl.forEach((text) => {
+    text.style.visibility = "hidden";
   });
 };
 
@@ -85,6 +92,7 @@ const roundOver = (transition) => {
   combo = 0;
   metQuota = 0;
   clearInterval(timerInterval);
+  resetInput();
   if (transition === 1) {
     if (round != 9) {
       quota += 5;
@@ -105,22 +113,27 @@ const roundOver = (transition) => {
 const showShopMessage = () => {
   if (inShop)
     outputEl.textContent =
-      'Welcome to the shop!\nHover over each power up to see what it does!\nClick on the button or type "buy name-of-item" when you want to buy something.\nType "continue" to go to the next round!';
+      'Welcome to the shop!\nHover over each power up to see what it does!\nType "continue" to go to the next round!';
 };
 
 const shopStart = () => {
   inShop = true;
   showShopMessage();
   comboEl.style.visibility = "hidden";
-  images.forEach((img) => {
+  imagesEl.forEach((img) => {
     img.style.visibility = "visible";
+    imageTextsEl.forEach((text) => {
+      text.style.visibility = "visible";
+      console.log("Text element: ", text);
+      if (img.alt === text.id) updateText(img, text);
+    });
   });
 };
 
 const purchase = (powerUp) => {
   //determine the price
   let price;
-  images.forEach((img) => {
+  imagesEl.forEach((img) => {
     if (img.alt === powerUp) {
       price = parseInt(img.dataset.base);
       if (powerUp === "quota")
@@ -149,7 +162,7 @@ const purchase = (powerUp) => {
     else console.error("Power up not found");
     infoEl.classList.add("shake");
   } else {
-    outputEl.textContent = "You do not have enough money to purchase that.";
+    outputEl.textContent = `You need $${price - money} to purchase that.`;
     clearTimeout(shopCantBuyMsg);
     shopCantBuyMsg = setTimeout(showShopMessage, 3500);
   }
@@ -176,10 +189,6 @@ const resetInput = () => {
   inputEl.value = "";
   scoreEl.textContent = `Score: ${score}\nMoney: $${money}\nQuota: ${metQuota}/${quota}`;
   infoEl.textContent = `Round: ${round}\n`;
-  if (quotaPU > 0) infoEl.textContent += `Quota Level ${quotaPU}\n`;
-  if (timePU > 0) infoEl.textContent += `Time Level ${timePU}\n`;
-  if (bonusPU > 0) infoEl.textContent += `Bonus Level ${bonusPU}\n`;
-  if (shortenPU > 0) infoEl.textContent += `Shorten Level ${shortenPU}\n`;
   if (inShop) infoEl.textContent += `Total time: ${baseTime}\n`;
 };
 
@@ -215,39 +224,27 @@ const updateCountdown = () => {
 //this handles what happens when you hover over the mouse. in a function so it can update when you purchase something by clicking as well
 const handleMouseEnter = (img) => {
   if (img.alt === "quota")
-    img.dataset.description =
-      "Reduces the quota permanently by 3.\nCost: " +
-      (
-        parseInt(img.dataset.base) +
-        parseInt(img.dataset.increment) * quotaPU
-      ).toString() +
-      '\n"buy quota"';
+    img.dataset.description = "Reduces the quota permanently by 3.";
   if (img.alt === "time")
-    img.dataset.description =
-      "Extend the time permanently by 1 second.\nCost: " +
-      (
-        parseInt(img.dataset.base) +
-        parseInt(img.dataset.increment) * timePU
-      ).toString() +
-      '\n"buy time"';
+    img.dataset.description = "Extend the time permanently by 1 second.";
   if (img.alt === "bonus")
     img.dataset.description =
-      "Gives more gold per word typed. Each level is another gold.\nCost: " +
-      (
-        parseInt(img.dataset.base) +
-        parseInt(img.dataset.increment) * bonusPU
-      ).toString() +
-      '\n"buy bonus"';
+      "Gives more money per word typed. Each level is another gold.";
   if (img.alt === "shorten")
-    img.dataset.description =
-      "Shortens words by 1 letter.\nCost: " +
-      (
-        parseInt(img.dataset.base) +
-        parseInt(img.dataset.increment) * shortenPU
-      ).toString() +
-      '\n"buy shorten"';
+    img.dataset.description = "Shortens words by 1 letter.";
   descBoxEl.textContent = img.dataset.description;
   descBoxEl.style.visibility = "visible";
+};
+
+const updateText = (img, text) => {
+  let pu;
+  let cost;
+  if (img.alt === "quota") pu = quotaPU;
+  else if (img.alt === "time") pu = timePU;
+  else if (img.alt === "bonus") pu = bonusPU;
+  else if (img.alt === "shorten") pu = shortenPU;
+  cost = parseInt(img.dataset.base) + parseInt(img.dataset.increment) * pu;
+  text.textContent = `Times Purchased: ${pu}\nCost: ${cost}\ncmd: "buy ${img.alt}"`;
 };
 
 /*----------------------------- Event Listeners -----------------------------*/
@@ -312,8 +309,12 @@ inputEl.addEventListener("input", (event) => {
         money += combo;
         metQuota += combo;
       }
-      if (metQuota >= quota) roundOver(1);
-      resetInput();
+      if (metQuota >= quota) {
+        let timeBonus = Math.round(time * 0.5);
+        score += timeBonus;
+        money += timeBonus;
+        roundOver(1);
+      } else resetInput();
     }
     //console.log("Current typed text:", textInput); //debug
   } else {
@@ -348,7 +349,7 @@ comboEl.addEventListener("animationend", () => {
 });
 
 //event listener for every single image in the shop
-images.forEach((img) => {
+imagesEl.forEach((img) => {
   img.addEventListener("mouseenter", () => {
     handleMouseEnter(img);
   });

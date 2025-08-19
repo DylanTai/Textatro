@@ -45,6 +45,7 @@ p {
   -webkit-text-fill-color: transparent;
   color: transparent;
   opacity: 0;
+  font-size: 3em;
 }
 
 #description-box {
@@ -55,7 +56,7 @@ p {
   background: #f9f9f9;
   min-width: 300px;
   text-align: center;
-  font-size: 30px;
+  font-size: 29px;
   font-weight: bold;
   visibility: hidden;
   white-space: pre-line;
@@ -76,16 +77,17 @@ p {
   color: #007bff;
   white-space: pre-wrap;
   text-align: center;
+  font-size: 2em;
 }
 
 #score {
   font-family: sans-serif;
-  position: fixed;
-  top: 0px;
-  left: 25px;
   color: white;
   font-size: 1.5em;
   white-space: pre-wrap;
+  position: fixed;
+  top: 0px;
+  left: 25px;
 }
 
 #startButton {
@@ -116,23 +118,41 @@ p {
 
 .image-container {
   display: flex;
-  gap: 15px;
 }
 
-.image-container img {
+.image-box {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 25%;
+}
+
+.image-box img {
+  width: 100%;
   height: auto;
   object-fit: cover;
   border-radius: 8px;
   cursor: pointer;
   transition: transform 0.2s ease;
-  justify-content: center;
-  align-items: center;
+  margin-top: -100px;
 }
 
-.image-container img:hover {
+.image-box img:hover {
   transform: scale(1.05);
+}
+
+.image-info {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #444;
+}
+
+.image-text {
+  font-family: sans-serif;
+  color: white;
+  font-size: 1.2em;
+  text-align: center;
+  white-space: pre-wrap;
 }
 
 .leftover {
