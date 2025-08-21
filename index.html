@@ -3,18 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Textaro</title>
+    <title>Textatro</title>
+    <link rel="icon" href="Images/Textatro.png" type="image/png" />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <div class="name-banner">
+      <img src="Images/NAME.png" alt="name" />
+    </div>
     <p id="score"></p>
     <p id="info"></p>
     <p id="timer"></p>
 
     <input type="text" id="myInput" />
-    <p id="myOutput">Placeholder</p>
 
-    <input type="file" id="browseButton" />
+    <audio id="textSound" src="Sound/type.mp3" preload="auto"></audio>
+    <p id="myOutput"></p>
+
+    <button id="diffButton">Difficulty: Easy</button>
     <button id="startButton">Start!</button>
 
     <p id="combo">Placeholder</p>
@@ -43,7 +49,7 @@
           src="Images/WordBonus.png"
           alt="bonus"
           data-base="50"
-          data-increment="15"
+          data-increment="50"
         />
         <div class="image-text" id="bonus">Placeholder</div>
       </div>
@@ -60,6 +66,6 @@
 
     <div id="description-box">Placeholder</div>
 
-    <script src="app.js"></script>
+    <script src="app.js" type="module"></script>
   </body>
 </html>

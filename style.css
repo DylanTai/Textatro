@@ -48,6 +48,27 @@ p {
   font-size: 3em;
 }
 
+#diffButton,
+#startButton {
+  width: 20vw; /* 20% of window width */
+  height: 8vh; /* 8% of window height */
+  font-size: 2vh; /* text scales with window height */
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  margin: 10px;
+  color: white;
+  font-weight: bold;
+}
+
+#diffButton {
+  background-color: green; /* default "Easy" */
+}
+
+#startButton {
+  background-color: #007bff; /* blue */
+}
+
 #description-box {
   margin-top: 30px;
   padding: 15px 20px;
@@ -88,12 +109,6 @@ p {
   position: fixed;
   top: 0px;
   left: 25px;
-}
-
-#startButton {
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 #timer {
@@ -153,6 +168,14 @@ p {
   font-size: 1.2em;
   text-align: center;
   white-space: pre-wrap;
+}
+
+.name-banner img {
+  max-width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  margin-top: 100px;
 }
 
 .leftover {
