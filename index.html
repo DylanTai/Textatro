@@ -15,51 +15,76 @@
     <p id="info"></p>
     <p id="timer"></p>
 
-    <input type="text" id="myInput" />
+    <div class="results-container">
+      <h2>Round Results</h2>
+      <table id="resultsTable">
+        <thead>
+          <tr>
+            <th scope="col">Score</th>
+            <th scope="col">Time Leftover</th>
+            <th scope="col">Money Received</th>
+            <th scope="col">Largest Combo</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
 
-    <audio id="textSound" src="Sound/type.mp3" preload="auto"></audio>
+    <input type="text" id="myInput" />
     <p id="myOutput"></p>
 
     <button id="diffButton">Difficulty: Easy</button>
     <button id="startButton">Start!</button>
+    <button id="instructButton">Instructions</button>
 
     <p id="combo">Placeholder</p>
 
     <div class="image-container">
       <div class="image-box">
-        <img
-          src="Images/QuotaReducer.png"
-          alt="quota"
-          data-base="30"
-          data-increment="10"
-        />
+        <div class="image-media">
+          <img
+            src="Images/QuotaReducer.png"
+            alt="quota"
+            data-base="30"
+            data-increment="10"
+          />
+        </div>
         <div class="image-text" id="quota">Placeholder</div>
       </div>
+
       <div class="image-box">
-        <img
-          src="Images/TimeExtender.png"
-          alt="time"
-          data-base="30"
-          data-increment="10"
-        />
+        <div class="image-media">
+          <img
+            src="Images/TimeExtender.png"
+            alt="time"
+            data-base="30"
+            data-increment="10"
+          />
+        </div>
         <div class="image-text" id="time">Placeholder</div>
       </div>
+
       <div class="image-box">
-        <img
-          src="Images/WordBonus.png"
-          alt="bonus"
-          data-base="50"
-          data-increment="50"
-        />
+        <div class="image-media">
+          <img
+            src="Images/WordBonus.png"
+            alt="bonus"
+            data-base="50"
+            data-increment="50"
+          />
+        </div>
         <div class="image-text" id="bonus">Placeholder</div>
       </div>
+
       <div class="image-box">
-        <img
-          src="Images/WordShortener.png"
-          alt="shorten"
-          data-base="150"
-          data-increment="150"
-        />
+        <div class="image-media">
+          <img
+            src="Images/WordShortener.png"
+            alt="shorten"
+            data-base="150"
+            data-increment="150"
+          />
+        </div>
         <div class="image-text" id="shorten">Placeholder</div>
       </div>
     </div>

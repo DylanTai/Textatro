@@ -1,5 +1,4 @@
 import easyWords from "./Words/easy.js";
-console.log(easyWords);
 import mediumWords from "./Words/medium.js";
 import hardWords from "./Words/hard.js";
 
@@ -27,28 +26,33 @@ let shortenPU = 0;
 let combo = 0;
 let firstShop = true;
 let difficulty = 0; // 0 = easy, 1 = medium, 2 = hard
+let showInstruct = false;
+let moneyRound = 0;
+let largestCombo = 0;
 
 /*------------------------ Cached Element References ------------------------*/
 const nameBannerEl = document.querySelector(".name-banner");
-const diffButton = document.getElementById("diffButton");
+const diffButtonEl = document.getElementById("diffButton");
+const startButtonEl = document.getElementById("startButton");
+const instructButtonEl = document.getElementById("instructButton");
 const timerEl = document.getElementById("timer");
 const inputEl = document.getElementById("myInput");
 const outputEl = document.getElementById("myOutput");
-const diffButtonEl = document.getElementById("diffButton");
-const startButtonEl = document.getElementById("startButton");
 const scoreEl = document.getElementById("score");
 const infoEl = document.getElementById("info");
 const imagesEl = document.querySelectorAll(".image-container img");
 const imageTextsEl = document.querySelectorAll(".image-text");
 const descBoxEl = document.getElementById("description-box");
 const comboEl = document.getElementById("combo");
+const resultsEl = document.querySelector(".results-container");
 
 /*-------------------------------- Functions --------------------------------*/
 
 //initialization function
 const init = () => {
+  startButtonEl.classList.add("shake-infinite");
   timerEl.style.visibility = "hidden";
-  inputEl.style.visibility = "hidden";
+  inputEl.style.display = "none";
   scoreEl.style.visibility = "hidden";
   infoEl.style.visibility = "hidden";
   imagesEl.forEach((img) => {
@@ -57,6 +61,7 @@ const init = () => {
   imageTextsEl.forEach((text) => {
     text.style.visibility = "hidden";
   });
+  resultsEl.style.display = "none";
 };
 
 //checks to see how much of a word is finished and returns an array that has:
@@ -95,14 +100,16 @@ const gameRoundStart = () => {
   time = baseTime;
   timerEl.textContent = `Time remaining: ${baseTime}`;
   timerInterval = setInterval(updateCountdown, 1000);
+  nameBannerEl.remove();
+  diffButtonEl.remove();
+  startButtonEl.remove();
+  instructButtonEl.remove();
   comboEl.style.visibility = "visible";
   timerEl.style.visibility = "visible";
-  inputEl.style.visibility = "visible";
+  inputEl.style.display = "block";
+  outputEl.style.visibility = "visible";
   scoreEl.style.visibility = "visible";
   infoEl.style.visibility = "visible";
-  nameBannerEl.style.visibility = "hidden";
-  diffButtonEl.style.visibility = "hidden";
-  startButtonEl.style.visibility = "hidden";
   imagesEl.forEach((img) => {
     img.style.visibility = "hidden";
   });
@@ -114,9 +121,9 @@ const gameRoundStart = () => {
 //this handles what happens when you hover over the mouse. in a function so it can update when you purchase something by clicking as well
 const handleMouseEnter = (img) => {
   if (img.alt === "quota")
-    img.dataset.description = "Reduces the quota permanently by 3.";
+    img.dataset.description = "Reduces the quota permanently by 10.";
   if (img.alt === "time")
-    img.dataset.description = "Extend the time permanently by 1 second.";
+    img.dataset.description = "Extend the time permanently by 3 seconds.";
   if (img.alt === "bonus")
     img.dataset.description = "An extra dollar per letter per purchase.";
   if (img.alt === "shorten")
@@ -151,8 +158,8 @@ const purchase = (powerUp) => {
     playSound("purchase");
     money -= price;
     incrementPU(powerUp);
-    if (powerUp === "quota") quota -= 3;
-    else if (powerUp === "time") baseTime += 1;
+    if (powerUp === "quota") quota -= 10;
+    else if (powerUp === "time") baseTime += 3;
     imagesEl.forEach((img) => {
       if (img.alt === powerUp) {
         img.classList.remove("shake");
@@ -177,7 +184,6 @@ const purchase = (powerUp) => {
 //returns a random word from the list of words
 const randomWord = () => {
   let ret = dict[Math.floor(Math.random() * dict.length)];
-  console.log(ret);
   if (ret.length - shortenPU >= 1)
     return ret.substring(0, ret.length - shortenPU);
   return randomWord();
@@ -202,6 +208,7 @@ const resetInput = () => {
 // transition = 4 -> go to you lose screen
 const roundOver = (transition) => {
   timerEl.style.visibility = "hidden";
+  comboEl.style.visibility = "hidden";
   outputEl.classList.remove("shake-infinite");
   comboEl.classList.remove("fadeInOut");
   combo = 0;
@@ -210,14 +217,14 @@ const roundOver = (transition) => {
   resetInput();
   if (transition === 1) {
     if (round != 9) {
-      quota += 5;
-      baseTime -= 5;
       infoEl.classList.add("shake");
+      quota += 50;
       round++;
       shopStart();
     } else if (round === 9) winLoseScreen("You won!");
   } else if (transition === 2) {
-    //need to code a screen when you beat a round that shows stats
+    //need to code a screen when you beat a round that shows stats'
+    statRoundStart();
   } else if (transition === 3) {
     firstShop = false;
     gameRoundStart();
@@ -232,7 +239,11 @@ const shopStart = () => {
   inShop = true;
   resetInput();
   showShopMessage();
-  comboEl.style.visibility = "hidden";
+  resultsEl.style.display = "none";
+  inputEl.style.display = "block";
+  outputEl.style.visibility = "visible";
+  scoreEl.style.visibility = "visible";
+  infoEl.style.visibility = "visible";
   imagesEl.forEach((img) => {
     img.style.visibility = "visible";
     imageTextsEl.forEach((text) => {
@@ -252,12 +263,21 @@ const showShopMessage = () => {
         : "");
 };
 
+const statRoundStart = () => {
+  updateResults();
+  resultsEl.style.display = "block";
+  inputEl.style.display = "none";
+  outputEl.style.visibility = "hidden";
+  scoreEl.style.visibility = "hidden";
+  infoEl.style.visibility = "hidden";
+};
+
 //part of the win or lose screen transition
 const winLoseScreen = (text) => {
   scoreEl.style.visibility = "hidden";
   infoEl.style.visibility = "hidden";
   timerEl.style.visibility = "hidden";
-  inputEl.style.visibility = "hidden";
+  inputEl.style.display = "none";
   outputEl.textContent = text;
   setTimeout(() => {
     location.reload();
@@ -272,6 +292,22 @@ const updateCountdown = () => {
   timerEl.textContent = `Time remaining: ${time}`;
 };
 
+// Call this whenever you have fresh values for the round
+function updateResults() {
+  const tbody = document.querySelector("#resultsTable tbody");
+  tbody.innerHTML = `
+      <tr>
+        <td>${score}</td>
+        <td>${time} seconds (+$${Math.round(time * 0.5)}!)</td>
+        <td>$${moneyRound}</td>
+        <td>${largestCombo}</td>
+      </tr>
+      <td colspan="4" class="continue-text">Press Enter to continue!</td>
+    `;
+  moneyRound = 0;
+  largestCombo = 0;
+}
+
 //updates the text in the shop for the descriptions
 const updateText = (img, text) => {
   let pu = findPU(img.alt);
@@ -282,6 +318,7 @@ const updateText = (img, text) => {
     text.textContent += `\nCurrent starting time: ${baseTime}`;
 };
 
+//plays the sound name of a file in the Sounds folder
 const playSound = (soundName) => {
   const audio = new Audio("Sounds/" + soundName + ".mp3");
   audio.play();
@@ -290,9 +327,23 @@ const playSound = (soundName) => {
 /*----------------------------- Event Listeners -----------------------------*/
 init();
 
+diffButton.addEventListener("click", () => {
+  playSound("click");
+  const difficulties = [
+    { name: "Easy", color: "green" },
+    { name: "Medium", color: "orange" },
+    { name: "Hard", color: "red" },
+  ];
+  difficulty = (difficulty + 1) % difficulties.length;
+  const currentDiff = difficulties[difficulty];
+  diffButton.textContent = "Difficulty: " + currentDiff.name;
+  diffButton.style.backgroundColor = currentDiff.color;
+});
+
 //reads the file inputted
 startButtonEl.addEventListener("click", function () {
   let words;
+  playSound("click");
   if (difficulty === 0) words = easyWords;
   else if (difficulty === 1) words = mediumWords;
   else if (difficulty === 2) words = hardWords;
@@ -302,6 +353,28 @@ startButtonEl.addEventListener("click", function () {
   gameRoundStart();
   resetInput();
   // outputEl.textContent = dict; //debug
+});
+
+//what happens when you click the instruct button
+instructButtonEl.addEventListener("click", () => {
+  playSound("click");
+  if (!showInstruct) {
+    startButtonEl.style.display = "none";
+    diffButtonEl.style.display = "none";
+    instructButtonEl.textContent = "Back";
+    outputEl.style.visibility = "visible";
+    outputEl.style.textAlign = "left";
+    outputEl.textContent =
+      "How to Play:\n1.) Cycle and choose Difficulty with the button.\n2.) Press Start! to begin.\n3.) Type the word shown as fast and accurately as you can.\n4.) Fill the Quota (enough letters typed) before the Timer runs out.\n5.) After each round, enter the Shop:\n\t-Type quota, time, bonus, or shorten to buy upgrades.\n\t-Type continue to start the next round.\n6.) Each new round gets an extra 50 quota.\n7.) Chain perfect words to build Combos for extra points.\n8.) Beat all 9 rounds to win- run out of time and you lose.";
+  } else {
+    startButtonEl.style.display = "block";
+    diffButtonEl.style.display = "block";
+    instructButtonEl.textContent = "Instructions";
+    outputEl.style.visibility = "hidden";
+    outputEl.style.textAlign = "center";
+    outputEl.textContent = "";
+  }
+  showInstruct = !showInstruct;
 });
 
 //event listener for typing
@@ -327,6 +400,7 @@ inputEl.addEventListener("input", (event) => {
       scoreEl.classList.add("shake");
       score += testWord.length;
       money += testWord.length * (bonusPU + 1);
+      moneyRound += testWord.length * (bonusPU + 1);
       metQuota += testWord.length;
       combo++;
       //display combo if it's 3 or more
@@ -335,19 +409,22 @@ inputEl.addEventListener("input", (event) => {
         comboEl.classList.add("fadeInOut");
         score += combo;
         money += combo;
+        moneyRound += combo;
         metQuota += combo;
+        largestCombo = combo > largestCombo ? combo : largestCombo;
       }
       if (metQuota >= quota) {
         let timeBonus = Math.round(time * 0.5);
         score += timeBonus;
         money += timeBonus;
-        roundOver(1);
+        moneyRound += timeBonus;
+        roundOver(2);
       } else resetInput();
     }
     //console.log("Current typed text:", textInput); //debug
   } else {
     //what happens if you're in a shop and are typing
-    outputWord = textInput.trim().split(" ")[0];
+    let outputWord = textInput.trim().split(" ")[0];
     //console.log(outputWords); //debug
     if (["quota", "time", "bonus", "shorten"].includes(outputWord)) {
       purchase(outputWord);
@@ -382,6 +459,7 @@ imagesEl.forEach((img) => {
   });
 
   img.addEventListener("click", () => {
+    playSound("click");
     purchase(img.alt);
     handleMouseEnter(img);
   });
@@ -391,14 +469,11 @@ imagesEl.forEach((img) => {
   });
 });
 
-diffButton.addEventListener("click", () => {
-  const difficulties = [
-    { name: "Easy", color: "green" },
-    { name: "Medium", color: "orange" },
-    { name: "Hard", color: "red" },
-  ];
-  let itr = ++difficulty % difficulties.length;
-  const currentDiff = difficulties[itr];
-  diffButton.textContent = "Difficulty: " + currentDiff.name;
-  diffButton.style.backgroundColor = currentDiff.color;
+//see if enter is pressed and the results are displaying, if so, continue
+document.addEventListener("keydown", (event) => {
+  if (
+    window.getComputedStyle(resultsEl).display === "block" &&
+    event.key === "Enter"
+  )
+    roundOver(1);
 });
