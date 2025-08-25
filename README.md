@@ -1,6 +1,6 @@
-# Textatro
+![Texatro](https://media.discordapp.net/attachments/1192937757966868612/1409534061487329360/NAME.png?ex=68adba64&is=68ac68e4&hm=08ecf93d605ae11f1d55faf5cc63d77bbcbc239f0ecf2a319f9f28f9bb3e2b8f&=&format=webp&quality=lossless&width=1604&height=341)
 
-Textatro is a fast-paced typing game inspired by roguelike mechanics. Players must type words quickly and accurately to meet quotas, earn points, and progress through increasingly difficult rounds. Between rounds, you can purchase upgrades to improve your chances of survival and maximize your score.
+Textatro is a fast-paced typing game inspired by roguelike mechanics, specifically from the game Balatro. Players must type words quickly and accurately to meet quotas, earn points, and progress through increasingly difficult rounds. Between rounds, you can purchase upgrades to improve your chances of survival and maximize your score.
 
 ## Features
 
