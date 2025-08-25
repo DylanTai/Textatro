@@ -42,27 +42,21 @@ Textatro is a fast-paced typing game inspired by roguelike mechanics, specifical
 
 6. **Win Condition**
    - Beat all 9 rounds by maintaining accuracy, speed, and strategy.
-   - Running out of time ends the game.
-
-## Tech Stack
-
-- **HTML5** for structure
-- **CSS3** for styling and animations
-- **JavaScript (ES Modules)** for game logic, interactivity, and DOM manipulation
+   - Running out of time ends the game
 
 ## Setup
 
-1. Clone or download the repository.
-2. Ensure the project directory includes:
-   - `index.html`
-   - `style.css`
-   - `app.js`
-   - `Images/` (with required assets like icons and upgrade images)
-3. Open `index.html` in your browser.
+1. Navigate to "https://dylantai.github.io/Textatro/"
+2. Start playing!
 
 ## Future Improvements
 
-- Add sound effects and music controls.
-- Leaderboard or scoring history.
-- More upgrade variety and random events.
-- Mobile optimization.
+- Make more apparent how good combos are in instructions
+- When time gets low make it more obvious time is low
+- Insta goes into input box when round or shop starts
+- Numbers also buy power ups
+- Put quota below text bar
+- Sounds for win/loss
+- Make fail sound louder
+- Mute button
+- Add functionality for copying and pasting a file
