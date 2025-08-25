@@ -5,46 +5,46 @@ import hardWords from "./Words/hard.js";
 /*-------------------------------- Constants --------------------------------*/
 
 /*---------------------------- Variables (state) ----------------------------*/
-let score = 0;
-let money = 0;
-let metQuota = 0;
-let round = 1;
-let quota = 100;
-let testWord;
-let outputWords;
-let textInput = "";
-let dict = [];
 let baseTime = 60;
-let time = baseTime;
-let timerInterval;
-let shopCantBuyMsg;
-let inShop = false;
-let quotaPU = 0;
-let timePU = 0;
 let bonusPU = 0;
-let shortenPU = 0;
 let combo = 0;
-let firstShop = true;
+let dict = [];
 let difficulty = 0; // 0 = easy, 1 = medium, 2 = hard
-let showInstruct = false;
-let moneyRound = 0;
+let firstShop = true;
+let inShop = false;
 let largestCombo = 0;
+let metQuota = 0;
+let money = 0;
+let moneyRound = 0;
+let outputWords;
+let quota = 100;
+let quotaPU = 0;
+let round = 1;
+let score = 0;
+let shopCantBuyMsg;
+let shortenPU = 0;
+let showInstruct = false;
+let testWord = "";
+let textInput = "";
+let time = baseTime;
+let timePU = 0;
+let timerInterval;
 
 /*------------------------ Cached Element References ------------------------*/
-const nameBannerEl = document.querySelector(".name-banner");
-const diffButtonEl = document.getElementById("diffButton");
-const startButtonEl = document.getElementById("startButton");
-const instructButtonEl = document.getElementById("instructButton");
-const timerEl = document.getElementById("timer");
-const inputEl = document.getElementById("myInput");
-const outputEl = document.getElementById("myOutput");
-const scoreEl = document.getElementById("score");
-const infoEl = document.getElementById("info");
-const imagesEl = document.querySelectorAll(".image-container img");
-const imageTextsEl = document.querySelectorAll(".image-text");
-const descBoxEl = document.getElementById("description-box");
 const comboEl = document.getElementById("combo");
+const descBoxEl = document.getElementById("description-box");
+const diffButtonEl = document.getElementById("diffButton");
+const imageTextsEl = document.querySelectorAll(".image-text");
+const imagesEl = document.querySelectorAll(".image-container img");
+const infoEl = document.getElementById("info");
+const inputEl = document.getElementById("myInput");
+const instructButtonEl = document.getElementById("instructButton");
+const nameBannerEl = document.querySelector(".name-banner");
+const outputEl = document.getElementById("myOutput");
 const resultsEl = document.querySelector(".results-container");
+const scoreEl = document.getElementById("score");
+const startButtonEl = document.getElementById("startButton");
+const timerEl = document.getElementById("timer");
 
 /*-------------------------------- Functions --------------------------------*/
 
@@ -140,6 +140,12 @@ const incrementPU = (powerUp) => {
   else if (powerUp === "bonus") bonusPU++;
   else if (powerUp === "shorten") shortenPU++;
   else console.error("incrementPU: Incorrect powerUp input");
+};
+
+//plays the sound name of a file in the Sounds folder
+const playSound = (soundName) => {
+  const audio = new Audio("Sounds/" + soundName + ".mp3");
+  audio.play();
 };
 
 const purchase = (powerUp) => {
@@ -321,15 +327,33 @@ const updateText = (img, text) => {
     text.textContent += `\nCurrent starting time: ${baseTime}`;
 };
 
-//plays the sound name of a file in the Sounds folder
-const playSound = (soundName) => {
-  const audio = new Audio("Sounds/" + soundName + ".mp3");
-  audio.play();
-};
-
 /*----------------------------- Event Listeners -----------------------------*/
 init();
 
+//global check for pressing enter for results
+document.addEventListener("keydown", (event) => {
+  if (
+    window.getComputedStyle(resultsEl).display === "block" &&
+    event.key === "Enter"
+  ) {
+    if (time <= 0) roundOver(4);
+    else roundOver(1);
+  }
+});
+
+//event listener for shaking for the top right info
+infoEl.addEventListener("animationend", () => {
+  infoEl.classList.remove("shake");
+});
+
+//event listener for the combo
+comboEl.addEventListener("animationend", () => {
+  comboEl.classList.remove("fadeInOut");
+});
+
+descBoxEl; // only manipulated inside other listeners, no addEventListener
+
+//difficulty button
 diffButton.addEventListener("click", () => {
   playSound("click");
   const difficulties = [
@@ -341,21 +365,6 @@ diffButton.addEventListener("click", () => {
   const currentDiff = difficulties[difficulty];
   diffButton.textContent = "Difficulty: " + currentDiff.name;
   diffButton.style.backgroundColor = currentDiff.color;
-});
-
-//reads the file inputted
-startButtonEl.addEventListener("click", function () {
-  let words;
-  playSound("click");
-  if (difficulty === 0) words = easyWords;
-  else if (difficulty === 1) words = mediumWords;
-  else if (difficulty === 2) words = hardWords;
-  // check if the word is an actual word
-  for (let itr = 0; itr < words.length; itr++)
-    if (/^[A-Za-z]+$/.test(words[itr])) dict.push(words[itr].toLowerCase());
-  gameRoundStart();
-  resetInput();
-  // outputEl.textContent = dict; //debug
 });
 
 //what happens when you click the instruct button
@@ -384,9 +393,7 @@ instructButtonEl.addEventListener("click", () => {
 inputEl.addEventListener("input", (event) => {
   textInput = event.target.value;
   playSound("type");
-  //what happens if you're playing the game and not in a shop
   if (!inShop) {
-    //outputs the array to the window to show which letters are good, bad, and not found yet
     outputWords = checkWords(textInput.trim(), testWord);
     if (outputWords[0].length > 0 && outputWords[1].length === 0) {
       outputEl.classList.add("shake-infinite");
@@ -397,7 +404,6 @@ inputEl.addEventListener("input", (event) => {
     }
     outputEl.innerHTML = `<span class="correct">${outputWords[0]}</span><span class="crossed-out">${outputWords[1]}</span><span class=leftover">${outputWords[2]}</span>`;
 
-    //what happens when you complete the word
     if (outputWords[0] === testWord) {
       playSound("correct");
       scoreEl.classList.add("shake");
@@ -406,7 +412,6 @@ inputEl.addEventListener("input", (event) => {
       moneyRound += testWord.length * (bonusPU + 1);
       metQuota += testWord.length;
       combo++;
-      //display combo if it's 3 or more
       if (combo >= 3) {
         comboEl.textContent = `COMBO: ${combo}`;
         comboEl.classList.add("fadeInOut");
@@ -424,31 +429,13 @@ inputEl.addEventListener("input", (event) => {
         roundOver(2);
       } else resetInput();
     }
-    //console.log("Current typed text:", textInput); //debug
   } else {
-    //what happens if you're in a shop and are typing
     let outputWord = textInput.trim().split(" ")[0];
-    //console.log(outputWords); //debug
     if (["quota", "time", "bonus", "shorten"].includes(outputWord)) {
       purchase(outputWord);
       resetInput();
     } else if (outputWord === "continue") roundOver(3);
   }
-});
-
-//event listener for shaking for the top left score
-scoreEl.addEventListener("animationend", () => {
-  scoreEl.classList.remove("shake");
-});
-
-//event listener for shaking for the top right info
-infoEl.addEventListener("animationend", () => {
-  infoEl.classList.remove("shake");
-});
-
-//event listener for the combo
-comboEl.addEventListener("animationend", () => {
-  comboEl.classList.remove("fadeInOut");
 });
 
 //event listener for every single image in the shop
@@ -472,13 +459,21 @@ imagesEl.forEach((img) => {
   });
 });
 
-//see if enter is pressed and the results are displaying, if so, continue
-document.addEventListener("keydown", (event) => {
-  if (
-    window.getComputedStyle(resultsEl).display === "block" &&
-    event.key === "Enter"
-  ) {
-    if (time <= 0) roundOver(4);
-    else roundOver(1);
-  }
+//event listener for shaking for the top left score
+scoreEl.addEventListener("animationend", () => {
+  scoreEl.classList.remove("shake");
+});
+
+//reads the file inputted
+startButtonEl.addEventListener("click", function () {
+  let words;
+  playSound("click");
+  if (difficulty === 0) words = easyWords;
+  else if (difficulty === 1) words = mediumWords;
+  else if (difficulty === 2) words = hardWords;
+
+  for (let itr = 0; itr < words.length; itr++)
+    if (/^[A-Za-z]+$/.test(words[itr])) dict.push(words[itr].toLowerCase());
+  gameRoundStart();
+  resetInput();
 });
