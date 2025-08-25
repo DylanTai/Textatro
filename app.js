@@ -127,7 +127,8 @@ const handleMouseEnter = (img) => {
   if (img.alt === "bonus")
     img.dataset.description = "An extra dollar per letter per purchase.";
   if (img.alt === "shorten")
-    img.dataset.description = "Shortens words by 1 letter.";
+    img.dataset.description =
+      "Shortens words by 1 letter. If the word is too small to be shortened, displays one letter.";
   descBoxEl.textContent = img.dataset.description;
   descBoxEl.style.visibility = "visible";
 };
@@ -169,7 +170,7 @@ const purchase = (powerUp) => {
         if (img.alt === text.id) updateText(img, text);
       });
     });
-  } else {
+  } else if (money < price) {
     playSound("combo-failed");
     outputEl.textContent =
       `You need $${price - money} to purchase that.` +
@@ -186,7 +187,7 @@ const randomWord = () => {
   let ret = dict[Math.floor(Math.random() * dict.length)];
   if (ret.length - shortenPU >= 1)
     return ret.substring(0, ret.length - shortenPU);
-  return randomWord();
+  return ret.substring(0, 1);
 };
 
 // resets the input and possibly resets the word if it's in the round or not
@@ -204,6 +205,7 @@ const resetInput = () => {
 
 // what happens when each round is over
 // transition = 1 -> go to shop
+// transition = 2 -> go to stat screen
 // transition = 3 -> go to next round/win
 // transition = 4 -> go to you lose screen
 const roundOver = (transition) => {
@@ -223,6 +225,7 @@ const roundOver = (transition) => {
       shopStart();
     } else if (round === 9) winLoseScreen("You won!");
   } else if (transition === 2) {
+    inputEl.value = "";
     //need to code a screen when you beat a round that shows stats'
     statRoundStart();
   } else if (transition === 3) {
@@ -274,11 +277,9 @@ const statRoundStart = () => {
 
 //part of the win or lose screen transition
 const winLoseScreen = (text) => {
-  scoreEl.style.visibility = "hidden";
-  infoEl.style.visibility = "hidden";
-  timerEl.style.visibility = "hidden";
-  inputEl.style.display = "none";
-  outputEl.textContent = text;
+  resultsEl.style.display = "none";
+  outputEl.style.visibility = "visible";
+  outputEl.textContent = text + `\nYour final score was ${score}!`;
   setTimeout(() => {
     location.reload();
   }, 5000);
@@ -286,7 +287,7 @@ const winLoseScreen = (text) => {
 
 //updates the timer
 const updateCountdown = () => {
-  if (time <= 0) roundOver(4);
+  if (time <= 0) roundOver(2);
   else time--;
 
   timerEl.textContent = `Time remaining: ${time}`;
@@ -474,6 +475,8 @@ document.addEventListener("keydown", (event) => {
   if (
     window.getComputedStyle(resultsEl).display === "block" &&
     event.key === "Enter"
-  )
-    roundOver(1);
+  ) {
+    if (time <= 0) roundOver(4);
+    else roundOver(1);
+  }
 });
