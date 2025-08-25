@@ -193,7 +193,9 @@ const randomWord = () => {
 // resets the input and possibly resets the word if it's in the round or not
 const resetInput = () => {
   if (!inShop) {
-    testWord = randomWord();
+    let prevWord = testWord;
+    //makes sure you cant get the same word twice in a row
+    while (prevWord === testWord) testWord = randomWord();
     outputEl.classList.remove("shake-infinite");
     outputEl.textContent = testWord;
   }
@@ -262,7 +264,7 @@ const showShopMessage = () => {
     outputEl.textContent =
       "Welcome to the shop!" +
       (firstShop
-        ? '\nHover over each power up to see what it does!\nType the highlighted word to purchase power ups!\nType "continue" to go to the next round!'
+        ? '\nHover over each power up to see what it does!\nType the highlighted word to purchase!\nType "continue" to go to the next round!'
         : "");
 };
 
