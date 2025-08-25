@@ -1,88 +1,68 @@
-My game is a browser-based rogue-like typing challenge, blending fast reflexes with strategic resource management. At its core, the game revolves around mastering words from your own custom word list, turning typing into both weapon and survival tool. This game is heavily inspired by the rogue-like game Balatro.
+# Textatro
 
-# How it works
+Textatro is a fast-paced typing game inspired by roguelike mechanics. Players must type words quickly and accurately to meet quotas, earn points, and progress through increasingly difficult rounds. Between rounds, you can purchase upgrades to improve your chances of survival and maximize your score.
 
-At the start, players upload or paste a text file of words, each separated by a new line. This list becomes the pool of words for the game.
+## Features
 
-Each round, the game randomly selects words from that pool, and the player must type them correctly before the round timer runs out.
+- **Typing Gameplay** – Type displayed words as fast and accurately as possible. Mistakes reduce your flow, while perfect streaks build combos for extra rewards.
+- **Round System** – Each round increases the challenge with stricter quotas and limited time.
+- **Upgrade Shop** – Spend earned money on upgrades:
+  - **Quota Reducer**: Lowers the required quota.
+  - **Time Extender**: Increases round timer.
+  - **Word Bonus**: Increases gold per word typed.
+  - **Word Shortener**: Reduces the length of words you must type.
+- **Difficulty Modes** – Cycle between Easy, Medium, and Hard.
+- **Results Tracking** – At the end of each round, see your score, money earned, time left, and largest combo achieved.
+- **Animations & Feedback** – Visual effects like shaking text, combo highlights, and smooth hover effects enhance the experience.
 
-Every round has a quota of words/score that must be typed. Fail to meet the quota and the run ends. As the rounds progress, the quotas get tighter, forcing faster and more accurate typing.
+## How to Play
 
-Between rounds, players enter a shop phase, where they can spend earned money to buy power-ups and upgrades. Some are short-term boosts (i.e. extra time, shortening of words, removal of certain letters, ways of getting more money), while others are long-term investments (i.e. higher money per word, permanent typing bonuses).
+1. **Select Difficulty**
 
-## Special twists I'd like to implement in the future/if I have time
+   - Click the **Difficulty** button to toggle between Easy, Medium, and Hard.
 
-- Every third round is a boss challenge, introducing special rules that make the game significantly harder (like reversed words, doubled quotas, distractions, etc.).
-- The ability to save runs so players can continue later, or experiment with different builds over multiple sessions.
+2. **Start the Game**
 
-## Core loop of the game
+   - Press **Start!** to begin the round.
 
-- Upload a word list
-- Survive typing rounds
-- Shop for upgrades
-- Face boss rounds (A long term goal that I have, at first I won't have these)
-- Push as far as possible until you fail. (A long term goal that I have, at first I will just make it 9 rounds I don't know if I can balance a game that goes infinitely)
+3. **Type Words**
 
-## Psuedo code of how the game would work
+   - Enter the word shown in the input box.
+   - Each correct word increases your score, earns money, and contributes to your quota.
+   - Perfect typing streaks trigger **combos** for bonus points and gold.
 
-### 1. Game Setup
+4. **Meet the Quota**
 
-- Load a text file that the player uploads.
-- Split the text into a list of words (one per line).
-- Initialize all game variables: current round, score, money, power-ups, quota of words to type, and timer.
-- Start the game loop.
+   - Fill the required quota before the timer runs out to advance.
 
-### 2. Game Loop
+5. **Visit the Shop**
 
-- If the player fails to meet the round’s quota, end the game immediately.
-- If the round is cleared, give rewards (score/money).
-- Enter a shop phase (except after round 9).
-- Every 3 rounds, insert a boss round with extra difficulty.
-- If all 9 rounds are cleared, display a win screen.
+   - After each round, type commands like `quota`, `time`, `bonus`, or `shorten` to purchase upgrades.
+   - Type `continue` to begin the next round.
 
-### 3. Playing a Regular Round
+6. **Win Condition**
+   - Beat all 9 rounds by maintaining accuracy, speed, and strategy.
+   - Running out of time ends the game.
 
-- Set the round’s difficulty (quota and timer).
-- Continuously show the player random words from their list.
-- Wait for the player to type the word correctly.
+## Tech Stack
 
-  _If correct:_
+- **HTML5** for structure
+- **CSS3** for styling and animations
+- **JavaScript (ES Modules)** for game logic, interactivity, and DOM manipulation
 
-- Increase the count of words typed.
-- Add money and score based on word length or difficulty.
-- Trigger any effects from power-ups.
+## Setup
 
-  _If incorrect:_
+1. Clone or download the repository.
+2. Ensure the project directory includes:
+   - `index.html`
+   - `style.css`
+   - `app.js`
+   - `Images/` (with required assets like icons and upgrade images)
+3. Open `index.html` in your browser.
 
-- Optionally apply penalties or effects from power-ups.
-- Continue until either the timer runs out or the quota is reached.
+## Future Improvements
 
-  _At the end:_
-
-* If quota not met → game over.
-* Otherwise → round success.
-
-### 4. Shop Phase
-
-- Come up with a list of power-ups I'd like to implement, I'd like to start with four personally and then build more afterwards
-- Display a shop with a list of possible upgrades/power-ups, using the typing bar as also the bar that you can purchase stuff from
-- Hide all other elements that don't involve the shop
-- Each power-up costs money.
-- Player can choose to buy one or more if affordable.
-- Add purchased upgrades to the player’s inventory.
-- Hide all shop elements when leaving the shop
-
-### 5. End Conditions
-
-- Game Over: Show the round the player failed on, display final score, and give option to restart.
-- Victory: Show a win screen if all 9 rounds are cleared, display total score and money, and give option to restart.
-
-## Conclusion
-
-_At this point I've also written the code for how a round would work without a timer, so basically I would just need to code:_
-
-- A timer
-- A shop
-- A win/loss screen
-- Transitions between the _round -> shop_ and the _round -> win/loss screen_
-- The power ups you can buy from the shop and what they do. I'll start with a small amount and continuosly add onto them.
+- Add sound effects and music controls.
+- Leaderboard or scoring history.
+- More upgrade variety and random events.
+- Mobile optimization.
