@@ -49,6 +49,9 @@ Textatro is a fast-paced typing game inspired by roguelike mechanics, specifical
 1. Navigate to "https://dylantai.github.io/Textatro/"
 2. Start playing!
 
+## Technology
+HTML, CSS, JS
+
 ## Future Improvements
 
 - Make more apparent how good combos are in instructions
