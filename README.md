@@ -50,6 +50,7 @@ Textatro is a fast-paced typing game inspired by roguelike mechanics, specifical
 2. Start playing!
 
 ## Technology
+
 HTML, CSS, JS
 
 ## Future Improvements
@@ -63,3 +64,6 @@ HTML, CSS, JS
 - Make fail sound louder
 - Mute button
 - Add functionality for copying and pasting a file
+- High score funcitonality
+- More power ups
+- "Boss" rounds
